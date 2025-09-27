@@ -1,7 +1,7 @@
 package com.liwanag.progress.domain.event;
 
 import com.liwanag.progress.domain.answer.Result;
-import com.liwanag.progress.domain.progress.FqId;
+import com.liwanag.progress.domain.content.FqId;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 

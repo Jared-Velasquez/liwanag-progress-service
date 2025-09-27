@@ -3,7 +3,7 @@ package com.liwanag.progress.adapters.secondary;
 import com.liwanag.progress.adapters.secondary.persistence.entity.ProgressEntity;
 import com.liwanag.progress.adapters.secondary.persistence.entity.ProgressKeys;
 import com.liwanag.progress.adapters.secondary.persistence.mapper.ProgressMapper;
-import com.liwanag.progress.domain.progress.FqId;
+import com.liwanag.progress.domain.content.FqId;
 import com.liwanag.progress.domain.progress.Progress;
 import com.liwanag.progress.ports.secondary.ProgressStore;
 import lombok.extern.slf4j.Slf4j;

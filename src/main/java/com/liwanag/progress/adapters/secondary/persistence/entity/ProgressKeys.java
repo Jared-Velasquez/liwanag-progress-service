@@ -1,6 +1,6 @@
 package com.liwanag.progress.adapters.secondary.persistence.entity;
 
-import com.liwanag.progress.domain.progress.FqId;
+import com.liwanag.progress.domain.content.FqId;
 
 import java.util.UUID;
 

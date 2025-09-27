@@ -1,5 +1,6 @@
 package com.liwanag.progress.domain.progress;
 
+import com.liwanag.progress.domain.content.FqId;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,5 +53,9 @@ public final class Progress {
             return true;
         }
         return false;
+    }
+
+    public Boolean isCompleted() {
+        return this.status == ProgressStatus.COMPLETED;
     }
 }

@@ -4,7 +4,7 @@ import com.liwanag.progress.adapters.primary.event.envelope.SessionFinishedEvent
 import com.liwanag.progress.adapters.secondary.event.envelope.ActivityCompletedEventPayload;
 import com.liwanag.progress.domain.event.ActivityCompletedEvent;
 import com.liwanag.progress.domain.event.SessionFinishedEvent;
-import com.liwanag.progress.domain.progress.FqId;
+import com.liwanag.progress.domain.content.FqId;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

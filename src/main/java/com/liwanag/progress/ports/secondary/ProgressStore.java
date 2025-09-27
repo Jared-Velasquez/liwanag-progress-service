@@ -1,6 +1,6 @@
 package com.liwanag.progress.ports.secondary;
 
-import com.liwanag.progress.domain.progress.FqId;
+import com.liwanag.progress.domain.content.FqId;
 import com.liwanag.progress.domain.progress.Progress;
 
 import java.util.Optional;
