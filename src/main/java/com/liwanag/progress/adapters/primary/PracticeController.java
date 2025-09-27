@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/progress")
 @RequiredArgsConstructor
-public class PracticeController {
+public final class PracticeController {
     @GetMapping("/units")
     public ResponseEntity<?> getUnitsProgress() {
         return ResponseEntity.ok().build();

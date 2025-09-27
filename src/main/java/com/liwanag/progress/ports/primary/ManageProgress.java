@@ -1,9 +1,7 @@
 package com.liwanag.progress.ports.primary;
 
-import com.liwanag.progress.domain.event.ActivityCompletedEvent;
-import com.liwanag.progress.domain.event.AnswerEvaluatedEvent;
+import com.liwanag.progress.domain.event.SessionFinishedEvent;
 
 public interface ManageProgress {
-    void onAnswerEvaluated(AnswerEvaluatedEvent event);
-    void onActivityCompleted(ActivityCompletedEvent event);
+    void onSessionFinished(SessionFinishedEvent event);
 }

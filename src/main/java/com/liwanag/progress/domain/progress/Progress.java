@@ -19,15 +19,13 @@ public final class Progress {
     @NotNull
     private ProgressStatus status;
     /*
-     * Total number of questions for activities,
-     * total number of activities for episodes,
+     * Total number of activities for episodes
      * or total number of episodes for units.
      */
     @NotNull
     private Integer totalCount;
     /*
-     * Number of completed questions for activities,
-     * number of completed activities for episodes,
+     * Number of completed activities for episodes,
      * or number of completed episodes for units.
      */
     @NotNull
@@ -36,5 +34,23 @@ public final class Progress {
     private Instant firstStartedAt;
     @NotNull
     private Instant lastUpdatedAt;
+    private Instant firstCompletedAt;
     private Instant completedAt;
+
+    /**
+     * Marks the progress as completed if not already completed.
+     * @return Boolean indicating if this marks the first activity completion (true) or was already completed (false).
+     */
+    public Boolean markCompleted() {
+        if (this.status == ProgressStatus.COMPLETED) {
+            return false;
+        }
+        this.status = ProgressStatus.COMPLETED;
+        this.completedAt = Instant.now();
+        if (this.fqid.isActivityFqId() && this.firstCompletedAt == null) {
+            this.firstCompletedAt = this.completedAt;
+            return true;
+        }
+        return false;
+    }
 }
