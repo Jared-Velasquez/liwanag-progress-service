@@ -1,9 +1,6 @@
 package com.liwanag.progress.config;
 
-import com.liwanag.progress.adapters.secondary.persistence.entity.ActivityEntity;
-import com.liwanag.progress.adapters.secondary.persistence.entity.EpisodeEntity;
-import com.liwanag.progress.adapters.secondary.persistence.entity.ProgressEntity;
-import com.liwanag.progress.adapters.secondary.persistence.entity.UnitEntity;
+import com.liwanag.progress.adapters.secondary.persistence.entity.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +42,20 @@ public class TableConfig {
     }
 
     @Bean
-    @Qualifier("progressTable")
-    public DynamoDbTable<ProgressEntity> progressTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-        return dynamoDbEnhancedClient.table("ProgressTable", TableSchema.fromBean(ProgressEntity.class));
+    @Qualifier("unitProgressTable")
+    public DynamoDbTable<UnitProgressEntity> unitProgressTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        return dynamoDbEnhancedClient.table("ProgressTable", TableSchema.fromBean(UnitProgressEntity.class));
+    }
+
+    @Bean
+    @Qualifier("episodeProgressTable")
+    public DynamoDbTable<EpisodeProgressEntity> episodeProgressTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        return dynamoDbEnhancedClient.table("ProgressTable", TableSchema.fromBean(EpisodeProgressEntity.class));
+    }
+
+    @Bean
+    @Qualifier("activityProgressTable")
+    public DynamoDbTable<ActivityProgressEntity> activityProgressTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        return dynamoDbEnhancedClient.table("ProgressTable", TableSchema.fromBean(ActivityProgressEntity.class));
     }
 }

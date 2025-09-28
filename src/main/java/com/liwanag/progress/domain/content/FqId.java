@@ -60,6 +60,20 @@ public final class FqId {
         return isEpisodeFqId() && activityId != null && ACTIVITY_ID_PATTERN.matcher(activityId).matches();
     }
 
+    public FqId toUnitFqId() {
+        if (!isUnitFqId()) {
+            throw new IllegalStateException("Cannot convert to Unit FqId: invalid unitId");
+        }
+        return new FqId(unitId, null, null);
+    }
+
+    public FqId toEpisodeFqId() {
+        if (!isEpisodeFqId()) {
+            throw new IllegalStateException("Cannot convert to Episode FqId: invalid unitId or episodeId");
+        }
+        return new FqId(unitId, episodeId, null);
+    }
+
     public String toString() {
         if (isActivityFqId()) {
             return String.format("ACTIVITY#%s#%s#%s", unitId, episodeId, activityId);

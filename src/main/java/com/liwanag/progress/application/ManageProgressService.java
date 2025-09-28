@@ -40,17 +40,24 @@ public class ManageProgressService implements ManageProgress {
         log.info("Activity progress marked as completed for userId: {}, fqId: {}", event.userId(), event.fqid());
 
         // Try to complete the episode if all activities are completed
-        tryCompleteEpisode(event.userId(), event.fqid());
+        tryCompleteEpisode(event.userId(), event.fqid().toEpisodeFqId());
 
         // Try to complete the unit if all episodes are completed
-        tryCompleteUnit(event.userId(), event.fqid());
+        tryCompleteUnit(event.userId(), event.fqid().toUnitFqId());
     }
 
     private void tryCompleteEpisode(UUID userId, FqId episodeId) {
-        // TODO: load episode content to get list of activities
+        // load episode content to get list of activities
         Episode episode = canonicalStore.loadEpisode(episodeId).orElseThrow(() -> new NoSuchElementException("Episode not found: " + episodeId);
 
-        // TODO: check if all activities are completed
+        // check if all activities are completed
+        for (FqId activityFqId : episode.getActivityFqIds()) {
+            Progress activityProgress = progressStore.load(userId, activityFqId).orElse(null);
+            if (activityProgress == null || !activityProgress.getStatus().equals(ProgressStatus.COMPLETED)) {
+                log.info("Activity not completed yet for userId: {}, fqId: {}", userId, activityFqId);
+                return;
+            }
+        }
 
         // TODO: if all activities are completed, mark episode progress as completed and save
 
@@ -58,7 +65,7 @@ public class ManageProgressService implements ManageProgress {
     }
 
     private void tryCompleteUnit(UUID userId, FqId unitId) {
-        // TODO: load unit content to get list of episodes
+        // load unit content to get list of episodes
         Unit unit = canonicalStore.loadUnit(unitId).orElseThrow(() -> new NoSuchElementException("Unit not found: " + unitId));
 
         // TODO: check if all episodes are completed
