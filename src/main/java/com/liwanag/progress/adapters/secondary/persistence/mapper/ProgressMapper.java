@@ -5,7 +5,10 @@ import com.liwanag.progress.domain.content.FqId;
 import com.liwanag.progress.domain.progress.*;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.liwanag.progress.adapters.secondary.persistence.entity.ProgressKeys.progressPk;
 import static com.liwanag.progress.adapters.secondary.persistence.entity.ProgressKeys.progressSk;
@@ -21,8 +24,8 @@ public final class ProgressMapper {
                 .episodeId(model.getFqid().getEpisodeId())
                 .activityId(model.getFqid().getActivityId())
                 .status(model.getStatus().name())
-                .firstStartedAt(model.getFirstStartedAt().toEpochMilli())
-                .lastUpdatedAt(model.getLastUpdatedAt().toEpochMilli())
+                .firstStartedAt(model.getFirstStartedAt() != null ? model.getFirstStartedAt().toEpochMilli() : null)
+                .lastUpdatedAt(model.getLastUpdatedAt() != null ? model.getLastUpdatedAt().toEpochMilli() : null)
                 .completedAt(model.getCompletedAt() != null ? model.getCompletedAt().toEpochMilli() : null)
                 .firstCompletedAt(model.getFirstCompletedAt() != null ? model.getFirstCompletedAt().toEpochMilli() : null)
                 .build();
@@ -33,10 +36,10 @@ public final class ProgressMapper {
                 .userId(UUID.fromString(entity.getUserId()))
                 .fqid(ProgressKeys.extractFqId(entity.getSk()))
                 .status(ProgressStatus.valueOf(entity.getStatus())) // TODO: perform exception handling
-                .firstStartedAt(java.time.Instant.ofEpochMilli(entity.getFirstStartedAt()))
-                .lastUpdatedAt(java.time.Instant.ofEpochMilli(entity.getLastUpdatedAt()))
-                .firstCompletedAt(entity.getFirstCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
-                .completedAt(entity.getCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getCompletedAt()) : null)
+                .firstStartedAt(entity.getFirstStartedAt() != null ? Instant.ofEpochMilli(entity.getFirstStartedAt()) : null)
+                .lastUpdatedAt(entity.getLastUpdatedAt() != null ? Instant.ofEpochMilli(entity.getLastUpdatedAt()) : null)
+                .firstCompletedAt(entity.getFirstCompletedAt() != null ? Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
+                .completedAt(entity.getCompletedAt() != null ? Instant.ofEpochMilli(entity.getCompletedAt()) : null)
                 .build();
     }
 
@@ -51,8 +54,8 @@ public final class ProgressMapper {
                 .totalCount(model.getTotalCount())
                 .completedCount(model.getCompletedCount())
                 .completedActivityFqIds(model.getCompletedActivityFqIds().stream().map(Object::toString).toList())
-                .firstStartedAt(model.getFirstStartedAt().toEpochMilli())
-                .lastUpdatedAt(model.getLastUpdatedAt().toEpochMilli())
+                .firstStartedAt(model.getFirstStartedAt() != null ? model.getFirstStartedAt().toEpochMilli() : null)
+                .lastUpdatedAt(model.getLastUpdatedAt() != null ? model.getLastUpdatedAt().toEpochMilli() : null)
                 .firstCompletedAt(model.getFirstCompletedAt() != null ? model.getFirstCompletedAt().toEpochMilli() : null)
                 .completedAt(model.getCompletedAt() != null ? model.getCompletedAt().toEpochMilli() : null)
                 .build();
@@ -65,11 +68,11 @@ public final class ProgressMapper {
                 .status(ProgressStatus.valueOf(entity.getStatus())) // TODO: perform exception handling
                 .totalCount(entity.getTotalCount())
                 .completedCount(entity.getCompletedCount())
-                .completedActivityFqIds(entity.getCompletedActivityFqIds().stream().map(FqId::new).toList())
-                .firstStartedAt(java.time.Instant.ofEpochMilli(entity.getFirstStartedAt()))
-                .lastUpdatedAt(java.time.Instant.ofEpochMilli(entity.getLastUpdatedAt()))
-                .firstCompletedAt(entity.getFirstCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
-                .completedAt(entity.getCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getCompletedAt()) : null)
+                .completedActivityFqIds(entity.getCompletedActivityFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)))
+                .firstStartedAt(entity.getFirstStartedAt() != null ? Instant.ofEpochMilli(entity.getFirstStartedAt()) : null)
+                .lastUpdatedAt(entity.getLastUpdatedAt() != null ? Instant.ofEpochMilli(entity.getLastUpdatedAt()) : null)
+                .firstCompletedAt(entity.getFirstCompletedAt() != null ? Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
+                .completedAt(entity.getCompletedAt() != null ? Instant.ofEpochMilli(entity.getCompletedAt()) : null)
                 .build();
     }
 
@@ -83,8 +86,8 @@ public final class ProgressMapper {
                 .totalCount(model.getTotalCount())
                 .completedCount(model.getCompletedCount())
                 .completedEpisodeFqIds(model.getCompletedEpisodeFqIds().stream().map(Object::toString).toList())
-                .firstStartedAt(model.getFirstStartedAt().toEpochMilli())
-                .lastUpdatedAt(model.getLastUpdatedAt().toEpochMilli())
+                .firstStartedAt(model.getFirstStartedAt() != null ? model.getFirstStartedAt().toEpochMilli() : null)
+                .lastUpdatedAt(model.getLastUpdatedAt() != null ? model.getLastUpdatedAt().toEpochMilli() : null)
                 .firstCompletedAt(model.getFirstCompletedAt() != null ? model.getFirstCompletedAt().toEpochMilli() : null)
                 .completedAt(model.getCompletedAt() != null ? model.getCompletedAt().toEpochMilli() : null)
                 .build();
@@ -97,11 +100,11 @@ public final class ProgressMapper {
                 .status(ProgressStatus.valueOf(entity.getStatus())) // TODO: perform exception handling
                 .totalCount(entity.getTotalCount())
                 .completedCount(entity.getCompletedCount())
-                .completedEpisodeFqIds(entity.getCompletedEpisodeFqIds().stream().map(FqId::new).toList())
-                .firstStartedAt(java.time.Instant.ofEpochMilli(entity.getFirstStartedAt()))
-                .lastUpdatedAt(java.time.Instant.ofEpochMilli(entity.getLastUpdatedAt()))
-                .firstCompletedAt(entity.getFirstCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
-                .completedAt(entity.getCompletedAt() != null ? java.time.Instant.ofEpochMilli(entity.getCompletedAt()) : null)
+                .completedEpisodeFqIds(entity.getCompletedEpisodeFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)))
+                .firstStartedAt(entity.getFirstStartedAt() != null ? Instant.ofEpochMilli(entity.getFirstStartedAt()) : null)
+                .lastUpdatedAt(entity.getLastUpdatedAt() != null ? Instant.ofEpochMilli(entity.getLastUpdatedAt()) : null)
+                .firstCompletedAt(entity.getFirstCompletedAt() != null ? Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
+                .completedAt(entity.getCompletedAt() != null ? Instant.ofEpochMilli(entity.getCompletedAt()) : null)
                 .build();
     }
 }

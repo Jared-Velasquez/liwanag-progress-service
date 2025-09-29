@@ -4,10 +4,10 @@ import com.liwanag.progress.domain.content.Episode;
 import com.liwanag.progress.domain.content.Unit;
 import com.liwanag.progress.domain.event.SessionFinishedEvent;
 import com.liwanag.progress.domain.content.FqId;
-import com.liwanag.progress.domain.progress.Progress;
-import com.liwanag.progress.domain.progress.ProgressStatus;
+import com.liwanag.progress.domain.progress.*;
 import com.liwanag.progress.ports.primary.ManageProgress;
 import com.liwanag.progress.ports.secondary.CanonicalStore;
+import com.liwanag.progress.ports.secondary.EventBus;
 import com.liwanag.progress.ports.secondary.ProgressStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +20,14 @@ import java.util.UUID;
 public class ManageProgressService implements ManageProgress {
     private final ProgressStore progressStore;
     private final CanonicalStore canonicalStore;
+    private final EventBus eventBus;
 
     @Override
     public void onSessionFinished(SessionFinishedEvent event) {
         // Try loading the activity progress corresponding to the session
         log.info("Handling SessionFinishedEvent for userId: {}, fqId: {}", event.userId(), event.fqid());
-        Progress activityProgress = progressStore.load(event.userId(), event.fqid()).orElse(
-                Progress.builder()
-                        .userId(event.userId())
-                        .fqid(event.fqid())
-                        .status(ProgressStatus.IN_PROGRESS)
-                        .build()
+        ActivityProgress activityProgress = progressStore.loadActivity(event.userId(), event.fqid()).orElse(
+                ActivityProgress.createInProgress(event.userId(), event.fqid())
         );
 
         // Update the activity progress to completed
@@ -39,39 +36,68 @@ public class ManageProgressService implements ManageProgress {
         progressStore.save(activityProgress);
         log.info("Activity progress marked as completed for userId: {}, fqId: {}", event.userId(), event.fqid());
 
-        // Try to complete the episode if all activities are completed
-        tryCompleteEpisode(event.userId(), event.fqid().toEpisodeFqId());
+        // Try to complete the episode
+        Boolean isEpisodeCompleted = tryCompleteEpisode(event.userId(), event.fqid());
 
-        // Try to complete the unit if all episodes are completed
-        tryCompleteUnit(event.userId(), event.fqid().toUnitFqId());
+        // Try to complete the unit
+        if (!isEpisodeCompleted)
+            return;
+
+        tryCompleteUnit(event.userId(), event.fqid());
     }
 
-    private void tryCompleteEpisode(UUID userId, FqId episodeId) {
-        // load episode content to get list of activities
-        Episode episode = canonicalStore.loadEpisode(episodeId).orElseThrow(() -> new NoSuchElementException("Episode not found: " + episodeId);
-
-        // check if all activities are completed
-        for (FqId activityFqId : episode.getActivityFqIds()) {
-            Progress activityProgress = progressStore.load(userId, activityFqId).orElse(null);
-            if (activityProgress == null || !activityProgress.getStatus().equals(ProgressStatus.COMPLETED)) {
-                log.info("Activity not completed yet for userId: {}, fqId: {}", userId, activityFqId);
-                return;
-            }
+    /**
+     * Try to complete the episode if all activities are completed
+     * @param userId
+     * @param activityId
+     * @return True if episode is completed, false otherwise
+     */
+    private Boolean tryCompleteEpisode(UUID userId, FqId activityId) {
+        if (!activityId.isActivityFqId()) {
+            log.warn("FqId is not of type Activity: {}", activityId);
+            return false;
         }
 
-        // TODO: if all activities are completed, mark episode progress as completed and save
+        FqId episodeId = activityId.toEpisodeFqId();
+
+        // load episode content to get list of activities
+        Episode episode = canonicalStore.loadEpisode(episodeId).orElseThrow(() -> new NoSuchElementException("Episode not found: " + episodeId));
+
+        EpisodeProgress episodeProgress = progressStore.loadEpisode(userId, episodeId).orElse(
+                EpisodeProgress.createInProgress(userId, episodeId, episode.getActivityFqIds().size())
+        );
+
+        episodeProgress.recordActivityCompletion(activityId);
+        progressStore.save(episodeProgress);
 
         // TODO: emit EpisodeCompletedEvent if episode is completed
+        // eventBus.emit(null);
+
+        return episodeProgress.isCompleted();
     }
 
-    private void tryCompleteUnit(UUID userId, FqId unitId) {
+    private Boolean tryCompleteUnit(UUID userId, FqId activityId) {
+        if (!activityId.isActivityFqId()) {
+            log.warn("FqId is not of type Activity: {}", activityId);
+            return false;
+        }
+
+        FqId unitId = activityId.toUnitFqId();
+        FqId episodeId = activityId.toEpisodeFqId();
+
         // load unit content to get list of episodes
-        Unit unit = canonicalStore.loadUnit(unitId).orElseThrow(() -> new NoSuchElementException("Unit not found: " + unitId));
+        Unit unit = canonicalStore.loadUnit(activityId).orElseThrow(() -> new NoSuchElementException("Unit not found: " + unitId));
 
-        // TODO: check if all episodes are completed
+        UnitProgress unitProgress = progressStore.loadUnit(userId, unitId).orElse(
+                UnitProgress.createInProgress(userId, unitId, unit.getEpisodeFqIds().size())
+        );
 
-        // TODO: if all episodes are completed, mark unit progress as completed and save
+        unitProgress.recordEpisodeCompletion(episodeId);
+        progressStore.save(unitProgress);
 
         // TODO: emit UnitCompletedEvent if unit is completed
+        // eventBus.emit(null);
+
+        return unitProgress.isCompleted();
     }
 }

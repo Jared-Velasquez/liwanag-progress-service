@@ -24,14 +24,27 @@ public final class ActivityProgress implements Progress {
     // Note: no totalCount or completedCount for ActivityProgress since we want to account
     // for user-generated questions
 
-    @NotNull
     private Instant firstStartedAt;
-    @NotNull
     private Instant lastUpdatedAt;
     private Instant firstCompletedAt;
     private Instant completedAt;
 
-    public static ActivityProgress create(UUID userId, FqId fqid) {
+    public static ActivityProgress createNew(UUID userId, FqId fqid) {
+        if (!fqid.isActivityFqId()) {
+            throw new IllegalArgumentException("FqId must be of type Activity");
+        }
+        return ActivityProgress.builder()
+                .userId(userId)
+                .fqid(fqid)
+                .status(ProgressStatus.NOT_STARTED)
+                .firstStartedAt(null)
+                .lastUpdatedAt(null)
+                .firstCompletedAt(null)
+                .completedAt(null)
+                .build();
+    }
+
+    public static ActivityProgress createInProgress(UUID userId, FqId fqid) {
         if (!fqid.isActivityFqId()) {
             throw new IllegalArgumentException("FqId must be of type Activity");
         }
