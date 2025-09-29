@@ -1,5 +1,6 @@
 package com.liwanag.progress.adapters.primary.event.eventbridge;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -10,6 +11,7 @@ import com.liwanag.progress.domain.event.DetailType;
 
 import java.time.Instant;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record EventBridgeEvent(
         String version,
         String id,

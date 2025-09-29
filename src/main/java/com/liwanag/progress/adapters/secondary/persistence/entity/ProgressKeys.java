@@ -1,9 +1,11 @@
 package com.liwanag.progress.adapters.secondary.persistence.entity;
 
 import com.liwanag.progress.domain.content.FqId;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
+@Slf4j
 public final class ProgressKeys {
     public static String progressPk(UUID userId) {
         return "USER#" + userId;
@@ -29,6 +31,7 @@ public final class ProgressKeys {
     }
 
     public static FqId extractFqId(String sk) {
+        log.info("Extracting FqId from SK: {}", sk);
         if (sk == null || !sk.startsWith("PROGRESS#")) {
             throw new IllegalArgumentException("Invalid SK format");
         }
@@ -37,7 +40,7 @@ public final class ProgressKeys {
             throw new IllegalArgumentException("Invalid SK format");
         }
         return switch (parts[1]) {
-            case "UNIT" -> new FqId(parts[2]);
+            case "UNIT" -> new FqId(parts[2], null, null);
             case "EPISODE" -> {
                 if (parts.length != 4) throw new IllegalArgumentException("Invalid EPISODE SK format");
                 yield new FqId(parts[2], parts[3], null);

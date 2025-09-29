@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.liwanag.progress.domain.event.DetailType.ANSWER_EVALUATED;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +20,7 @@ public final class ProgressQueueConsumer {
     private final InboundEventMapper mapper;
     private final ManageProgress manageProgress;
 
-    @SqsListener(value = "UserProgressQueue")
+    @SqsListener(value = "UserProgressQueue.fifo")
     public void listen(String message) throws JsonProcessingException {
         EventBridgeEvent event = objectMapper.readValue(message, EventBridgeEvent.class);
 

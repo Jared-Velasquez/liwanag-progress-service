@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public final class UnitProgress implements Progress {
                 .status(ProgressStatus.NOT_STARTED)
                 .totalCount(totalCount)
                 .completedCount(0)
-                .completedActivityFqIds(Set.of())
+                .completedActivityFqIds(new HashSet<>())
                 .firstStartedAt(null)
                 .lastUpdatedAt(null)
                 .firstCompletedAt(null)
@@ -60,6 +61,7 @@ public final class UnitProgress implements Progress {
                 .status(ProgressStatus.IN_PROGRESS)
                 .totalCount(totalCount)
                 .completedCount(0)
+                .completedEpisodeFqIds(new HashSet<>())
                 .firstStartedAt(Instant.now())
                 .lastUpdatedAt(Instant.now())
                 .firstCompletedAt(null)
@@ -67,14 +69,14 @@ public final class UnitProgress implements Progress {
                 .build();
     }
 
-    public Boolean recordEpisodeCompletion(FqId activityFqId) {
-        if (!activityFqId.isActivityFqId()) {
-            throw new IllegalArgumentException("FqId must be of type Activity");
+    public Boolean recordEpisodeCompletion(FqId episodeFqId) {
+        if (!episodeFqId.isEpisodeFqId()) {
+            throw new IllegalArgumentException("FqId must be of type Episode");
         }
-        if (this.completedEpisodeFqIds.contains(activityFqId)) {
+        if (this.completedEpisodeFqIds.contains(episodeFqId)) {
             return false;
         }
-        this.completedEpisodeFqIds.add(activityFqId);
+        this.completedEpisodeFqIds.add(episodeFqId);
         this.completedCount = this.completedEpisodeFqIds.size();
         this.lastUpdatedAt = Instant.now();
         if (this.status != ProgressStatus.COMPLETED) {

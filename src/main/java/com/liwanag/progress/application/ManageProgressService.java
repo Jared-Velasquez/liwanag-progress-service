@@ -37,12 +37,14 @@ public class ManageProgressService implements ManageProgress {
         log.info("Activity progress marked as completed for userId: {}, fqId: {}", event.userId(), event.fqid());
 
         // Try to complete the episode
+        log.info("Trying to complete episode for userId: {}, fqId: {}", event.userId(), event.fqid());
         Boolean isEpisodeCompleted = tryCompleteEpisode(event.userId(), event.fqid());
 
         // Try to complete the unit
         if (!isEpisodeCompleted)
             return;
 
+        log.info("Trying to complete unit for userId: {}, fqId: {}", event.userId(), event.fqid());
         tryCompleteUnit(event.userId(), event.fqid());
     }
 
@@ -61,8 +63,10 @@ public class ManageProgressService implements ManageProgress {
         FqId episodeId = activityId.toEpisodeFqId();
 
         // load episode content to get list of activities
+        log.info("Loading episode content for episodeId: {}", episodeId);
         Episode episode = canonicalStore.loadEpisode(episodeId).orElseThrow(() -> new NoSuchElementException("Episode not found: " + episodeId));
 
+        log.info("Loading episode progress for userId: {}, episodeId: {}", userId, episodeId);
         EpisodeProgress episodeProgress = progressStore.loadEpisode(userId, episodeId).orElse(
                 EpisodeProgress.createInProgress(userId, episodeId, episode.getActivityFqIds().size())
         );
@@ -86,8 +90,10 @@ public class ManageProgressService implements ManageProgress {
         FqId episodeId = activityId.toEpisodeFqId();
 
         // load unit content to get list of episodes
+        log.info("Loading unit content for unitId: {}", unitId);
         Unit unit = canonicalStore.loadUnit(activityId).orElseThrow(() -> new NoSuchElementException("Unit not found: " + unitId));
 
+        log.info("Loading unit progress for userId: {}, unitId: {}", userId, unitId);
         UnitProgress unitProgress = progressStore.loadUnit(userId, unitId).orElse(
                 UnitProgress.createInProgress(userId, unitId, unit.getEpisodeFqIds().size())
         );

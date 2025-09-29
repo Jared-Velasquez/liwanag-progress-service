@@ -11,6 +11,7 @@ import com.liwanag.progress.domain.content.Unit;
 import com.liwanag.progress.ports.secondary.CanonicalStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static com.liwanag.progress.adapters.secondary.persistence.entity.ContentKeys.*;
 
+@Component
 @Slf4j
 public final class DynamoDbCanonicalStore implements CanonicalStore {
     private final DynamoDbTable<UnitEntity> unitTable;

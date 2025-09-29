@@ -3,7 +3,9 @@ package com.liwanag.progress.domain.content;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -12,6 +14,7 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Getter
 @Setter
+@Slf4j
 public final class FqId {
     private String unitId;
     private String episodeId;
@@ -23,6 +26,8 @@ public final class FqId {
         if (parts.length < 2 || parts.length > 4) {
             throw new IllegalArgumentException("Invalid FqId format");
         }
+
+        log.info("Parsing FqId: {}", strFqId);
 
         switch (parts[0]) {
             case "UNIT" -> {
@@ -84,5 +89,21 @@ public final class FqId {
         } else {
             throw new IllegalStateException("Invalid FqId");
         }
+    }
+
+    // If the object is an FqId and has the same unitId, episodeId, and activityId, then they are equal.
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        FqId other = (FqId) obj;
+        return (Objects.equals(unitId, other.unitId)) &&
+               (Objects.equals(episodeId, other.episodeId)) &&
+               (Objects.equals(activityId, other.activityId));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(unitId, episodeId, activityId);
     }
 }

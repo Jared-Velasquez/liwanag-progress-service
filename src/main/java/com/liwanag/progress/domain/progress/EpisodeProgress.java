@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@Slf4j
 public final class EpisodeProgress implements Progress {
     @NotNull
     private UUID userId;
@@ -42,7 +45,7 @@ public final class EpisodeProgress implements Progress {
                 .status(ProgressStatus.NOT_STARTED)
                 .totalCount(totalCount)
                 .completedCount(0)
-                .completedActivityFqIds(Set.of())
+                .completedActivityFqIds(new HashSet<>())
                 .firstStartedAt(null)
                 .lastUpdatedAt(null)
                 .firstCompletedAt(null)
@@ -60,6 +63,7 @@ public final class EpisodeProgress implements Progress {
                 .status(ProgressStatus.IN_PROGRESS)
                 .totalCount(totalCount)
                 .completedCount(0)
+                .completedActivityFqIds(new HashSet<>())
                 .firstStartedAt(Instant.now())
                 .lastUpdatedAt(Instant.now())
                 .firstCompletedAt(null)
@@ -70,6 +74,9 @@ public final class EpisodeProgress implements Progress {
     public Boolean recordActivityCompletion(FqId activityFqId) {
         if (!activityFqId.isActivityFqId()) {
             throw new IllegalArgumentException("FqId must be of type Activity");
+        }
+        for (FqId completedActivityFqId : this.completedActivityFqIds) {
+            log.info("Already completed activity: {}", completedActivityFqId);
         }
         if (this.completedActivityFqIds.contains(activityFqId)) {
             return false;

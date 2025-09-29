@@ -3,6 +3,7 @@ package com.liwanag.progress.adapters.secondary.persistence.mapper;
 import com.liwanag.progress.adapters.secondary.persistence.entity.*;
 import com.liwanag.progress.domain.content.FqId;
 import com.liwanag.progress.domain.progress.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -14,6 +15,7 @@ import static com.liwanag.progress.adapters.secondary.persistence.entity.Progres
 import static com.liwanag.progress.adapters.secondary.persistence.entity.ProgressKeys.progressSk;
 
 @Component
+@Slf4j
 public final class ProgressMapper {
     public ActivityProgressEntity toEntity(ActivityProgress model) {
         return ActivityProgressEntity.builder()
@@ -94,6 +96,7 @@ public final class ProgressMapper {
     }
 
     public UnitProgress toModel(UnitProgressEntity entity) {
+        log.info("Mapping FqId from entity: {}", entity.getSk());
         return UnitProgress.builder()
                 .userId(UUID.fromString(entity.getUserId()))
                 .fqid(ProgressKeys.extractFqId(entity.getSk()))
