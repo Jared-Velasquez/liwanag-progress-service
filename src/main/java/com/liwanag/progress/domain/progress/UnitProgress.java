@@ -33,19 +33,19 @@ public final class UnitProgress implements Progress {
     private Instant firstCompletedAt;
     private Instant completedAt;
 
-    public static EpisodeProgress createNew(UUID userId, FqId fqid, Integer totalCount) {
-        if (!fqid.isEpisodeFqId()) {
-            throw new IllegalArgumentException("FqId must be of type Episode");
+    public static UnitProgress createNew(UUID userId, FqId fqid, Integer totalCount) {
+        if (!fqid.isUnitFqId()) {
+            throw new IllegalArgumentException("FqId must be of type Unit");
         }
-        return EpisodeProgress.builder()
+        return UnitProgress.builder()
                 .userId(userId)
-                .fqid(fqid)
+                .fqid(fqid.toUnitFqId()) // Discard the episode and activity part if present
                 .status(ProgressStatus.NOT_STARTED)
                 .totalCount(totalCount)
                 .completedCount(0)
-                .completedActivityFqIds(new HashSet<>())
-                .firstStartedAt(null)
-                .lastUpdatedAt(null)
+                .completedEpisodeFqIds(new HashSet<>())
+                .firstStartedAt(Instant.now())
+                .lastUpdatedAt(Instant.now())
                 .firstCompletedAt(null)
                 .completedAt(null)
                 .build();

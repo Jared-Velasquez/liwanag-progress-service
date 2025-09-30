@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,7 +57,7 @@ public final class ProgressMapper {
                 .status(model.getStatus().name())
                 .totalCount(model.getTotalCount())
                 .completedCount(model.getCompletedCount())
-                .completedActivityFqIds(model.getCompletedActivityFqIds().stream().map(Object::toString).toList())
+                .completedActivityFqIds(model.getCompletedActivityFqIds() != null ? model.getCompletedActivityFqIds().stream().map(Object::toString).toList() : new ArrayList<>())
                 .firstStartedAt(model.getFirstStartedAt() != null ? model.getFirstStartedAt().toEpochMilli() : null)
                 .lastUpdatedAt(model.getLastUpdatedAt() != null ? model.getLastUpdatedAt().toEpochMilli() : null)
                 .firstCompletedAt(model.getFirstCompletedAt() != null ? model.getFirstCompletedAt().toEpochMilli() : null)
@@ -70,7 +72,7 @@ public final class ProgressMapper {
                 .status(ProgressStatus.valueOf(entity.getStatus())) // TODO: perform exception handling
                 .totalCount(entity.getTotalCount())
                 .completedCount(entity.getCompletedCount())
-                .completedActivityFqIds(entity.getCompletedActivityFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)))
+                .completedActivityFqIds(entity.getCompletedActivityFqIds() != null ? entity.getCompletedActivityFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>())
                 .firstStartedAt(entity.getFirstStartedAt() != null ? Instant.ofEpochMilli(entity.getFirstStartedAt()) : null)
                 .lastUpdatedAt(entity.getLastUpdatedAt() != null ? Instant.ofEpochMilli(entity.getLastUpdatedAt()) : null)
                 .firstCompletedAt(entity.getFirstCompletedAt() != null ? Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)
@@ -87,7 +89,7 @@ public final class ProgressMapper {
                 .status(model.getStatus().name())
                 .totalCount(model.getTotalCount())
                 .completedCount(model.getCompletedCount())
-                .completedEpisodeFqIds(model.getCompletedEpisodeFqIds().stream().map(Object::toString).toList())
+                .completedEpisodeFqIds(model.getCompletedEpisodeFqIds() != null ? model.getCompletedEpisodeFqIds().stream().map(Object::toString).toList() : null)
                 .firstStartedAt(model.getFirstStartedAt() != null ? model.getFirstStartedAt().toEpochMilli() : null)
                 .lastUpdatedAt(model.getLastUpdatedAt() != null ? model.getLastUpdatedAt().toEpochMilli() : null)
                 .firstCompletedAt(model.getFirstCompletedAt() != null ? model.getFirstCompletedAt().toEpochMilli() : null)
@@ -103,7 +105,7 @@ public final class ProgressMapper {
                 .status(ProgressStatus.valueOf(entity.getStatus())) // TODO: perform exception handling
                 .totalCount(entity.getTotalCount())
                 .completedCount(entity.getCompletedCount())
-                .completedEpisodeFqIds(entity.getCompletedEpisodeFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)))
+                .completedEpisodeFqIds(entity.getCompletedEpisodeFqIds() != null ? entity.getCompletedEpisodeFqIds().stream().map(FqId::new).collect(Collectors.toCollection(HashSet::new)) : new HashSet<>())
                 .firstStartedAt(entity.getFirstStartedAt() != null ? Instant.ofEpochMilli(entity.getFirstStartedAt()) : null)
                 .lastUpdatedAt(entity.getLastUpdatedAt() != null ? Instant.ofEpochMilli(entity.getLastUpdatedAt()) : null)
                 .firstCompletedAt(entity.getFirstCompletedAt() != null ? Instant.ofEpochMilli(entity.getFirstCompletedAt()) : null)

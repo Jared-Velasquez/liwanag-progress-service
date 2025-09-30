@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -41,8 +42,10 @@ public class ManageProgressService implements ManageProgress {
         Boolean isEpisodeCompleted = tryCompleteEpisode(event.userId(), event.fqid());
 
         // Try to complete the unit
-        if (!isEpisodeCompleted)
+        if (!isEpisodeCompleted) {
+            createUnitProgressIfNotExists(event.userId(), event.fqid());
             return;
+        }
 
         log.info("Trying to complete unit for userId: {}, fqId: {}", event.userId(), event.fqid());
         tryCompleteUnit(event.userId(), event.fqid());
@@ -78,6 +81,24 @@ public class ManageProgressService implements ManageProgress {
         // eventBus.emit(null);
 
         return episodeProgress.isCompleted();
+    }
+
+    /**
+     * Create a UnitProgress in IN_PROGRESS state if it does not exist
+     * @param userId
+     * @param unitId
+     */
+    private void createUnitProgressIfNotExists(UUID userId, FqId unitId) {
+        log.info("Checking if unit progress exists for userId: {}, unitId: {}", userId, unitId);
+        Optional<UnitProgress> existingProgress = progressStore.loadUnit(userId, unitId);
+        if (existingProgress.isEmpty() || existingProgress.get().getStatus() == ProgressStatus.NOT_STARTED) {
+            log.info("Unit progress does not exist, creating new one for userId: {}, unitId: {}", userId, unitId);
+            Unit unit = canonicalStore.loadUnit(unitId).orElseThrow(() -> new NoSuchElementException("Unit not found: " + unitId));
+            UnitProgress unitProgress = UnitProgress.createInProgress(userId, unitId, unit.getEpisodeFqIds().size());
+            progressStore.save(unitProgress);
+        } else {
+            log.info("Unit progress already exists for userId: {}, unitId: {}", userId, unitId);
+        }
     }
 
     private Boolean tryCompleteUnit(UUID userId, FqId activityId) {

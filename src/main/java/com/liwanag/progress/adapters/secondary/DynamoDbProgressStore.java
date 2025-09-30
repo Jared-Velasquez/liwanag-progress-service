@@ -47,6 +47,9 @@ public class DynamoDbProgressStore implements ProgressStore {
 
     @Override
     public Optional<ActivityProgress> loadActivity(UUID userId, FqId fqid) {
+        if (!fqid.isActivityFqId())
+            throw new IllegalArgumentException("FqId is not an activity FqId: " + fqid);
+
         ActivityProgressEntity entity = activityProgressTable.getItem(r -> r.key(k -> k
                 .partitionValue(ProgressKeys.progressPk(userId))
                 .sortValue(ProgressKeys.progressSk(fqid))
@@ -62,13 +65,17 @@ public class DynamoDbProgressStore implements ProgressStore {
 
     @Override
     public Optional<EpisodeProgress> loadEpisode(UUID userId, FqId fqid) {
+        if (!fqid.isEpisodeFqId())
+            throw new IllegalArgumentException("FqId is not an episode FqId: " + fqid);
+
+        FqId episodeId = fqid.toEpisodeFqId();
         EpisodeProgressEntity entity = episodeProgressTable.getItem(r -> r.key(k -> k
                 .partitionValue(ProgressKeys.progressPk(userId))
-                .sortValue(ProgressKeys.progressSk(fqid))
+                .sortValue(ProgressKeys.progressSk(episodeId))
         ));
 
         if (entity == null) {
-            log.error("EpisodeProgress not found for userId: {} and FqId: {}", userId, fqid);
+            log.error("EpisodeProgress not found for userId: {} and FqId: {}", userId, episodeId);
             return Optional.empty();
         }
 
@@ -77,13 +84,17 @@ public class DynamoDbProgressStore implements ProgressStore {
 
     @Override
     public Optional<UnitProgress> loadUnit(UUID userId, FqId fqid) {
+        if (!fqid.isUnitFqId())
+            throw new IllegalArgumentException("FqId is not a unit FqId: " + fqid);
+
+        FqId unitId = fqid.toUnitFqId();
         UnitProgressEntity entity = unitProgressTable.getItem(r -> r.key(k -> k
                 .partitionValue(ProgressKeys.progressPk(userId))
-                .sortValue(ProgressKeys.progressSk(fqid))
+                .sortValue(ProgressKeys.progressSk(unitId))
         ));
 
         if (entity == null) {
-            log.error("UnitProgress not found for userId: {} and FqId: {}", userId, fqid);
+            log.error("UnitProgress not found for userId: {} and FqId: {}", userId, unitId);
             return Optional.empty();
         }
 

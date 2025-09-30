@@ -12,8 +12,8 @@ detail_type = "SessionFinished"
 payload = {
     "userId": "e35e4184-f05c-4736-a902-8e0f1479563f",
     "sessionId": "4a8a4e34-3e81-42db-b238-9dd9da3d1f4a",
-    "activityId": "a_1",
-    "episodeId": "e_1",
+    "activityId": "a_3",
+    "episodeId": "e_5",
     "unitId": "u_1",
     "timestamp": "2025-08-23T12:34:56.789Z"
 }
